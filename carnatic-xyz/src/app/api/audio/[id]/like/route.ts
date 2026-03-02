@@ -20,7 +20,7 @@ export async function POST(
 	if (!Number.isFinite(idNum)) {
 		return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 	}
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	try {
 		const [audio] = await db

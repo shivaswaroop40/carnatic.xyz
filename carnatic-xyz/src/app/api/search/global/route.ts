@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 			questions: [],
 		});
 	}
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	const pattern = `%${q}%`;
 	try {

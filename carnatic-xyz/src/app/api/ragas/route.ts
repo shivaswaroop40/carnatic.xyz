@@ -7,7 +7,7 @@ import { getDb } from "@/lib/db";
 export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	const url = request.url ? new URL(request.url) : new URL("http://localhost");
 	const type = url.searchParams.get("type");

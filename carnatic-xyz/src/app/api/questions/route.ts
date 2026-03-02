@@ -8,7 +8,7 @@ import { getDb } from "@/lib/db";
 export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	const url = request.url ? new URL(request.url) : new URL("http://localhost");
 	const sort = url.searchParams.get("sort") || "recent";
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-|-$/g, "");
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	const now = new Date();
 	try {

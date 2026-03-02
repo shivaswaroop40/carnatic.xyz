@@ -7,7 +7,7 @@ import { getDb } from "@/lib/db";
 export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	const url = request.url ? new URL(request.url) : new URL("http://localhost");
 	const limit = Math.min(parseInt(url.searchParams.get("limit") || "20", 10), 50);

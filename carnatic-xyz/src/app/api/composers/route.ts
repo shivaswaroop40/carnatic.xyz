@@ -10,7 +10,7 @@ const DEFAULT_LIMIT = 25;
 const MAX_LIMIT = 100;
 
 export async function GET(request: NextRequest) {
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	const url = request.url ? new URL(request.url) : new URL("http://localhost");
 	const limit = Math.min(

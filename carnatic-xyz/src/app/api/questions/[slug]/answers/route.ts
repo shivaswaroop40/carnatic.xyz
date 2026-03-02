@@ -12,7 +12,7 @@ export async function GET(
 	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	const { slug } = await params;
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	try {
 		const [q] = await db
@@ -60,7 +60,7 @@ export async function POST(
 			{ status: 400 },
 		);
 	}
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	try {
 		const [q] = await db

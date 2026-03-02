@@ -1,0 +1,9 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,78673,(e,t,r)=>{"use strict";var o=Object.defineProperty,n=Object.getOwnPropertyDescriptor,a=Object.getOwnPropertyNames,c=Object.prototype.hasOwnProperty,i={},l={clerkDevelopmentCache:()=>g,createConfirmationMessage:()=>h,createKeylessModeMessage:()=>u};for(var s in l)o(i,s,{get:l[s],enumerable:!0});t.exports=((e,t,r,i)=>{if(t&&"object"==typeof t||"function"==typeof t)for(let r of a(t))c.call(e,r)||void 0===r||o(e,r,{get:()=>t[r],enumerable:!(i=n(t,r))||i.enumerable});return e})(o({},"__esModule",{value:!0}),i);var _=e.r(39109);let u=e=>`
+\x1b[35m
+[Clerk]:\x1b[0m You are running in keyless mode.
+You can \x1b[35mclaim your keys\x1b[0m by visiting ${e.claimUrl}
+`,h=()=>`
+\x1b[35m
+[Clerk]:\x1b[0m Your application is running with your claimed keys.
+You can safely remove the \x1b[35m.clerk/\x1b[0m from your project.
+`,g=function(){if((0,_.isDevelopmentEnvironment)())return e.g.__clerk_internal_keyless_logger||(e.g.__clerk_internal_keyless_logger={__cache:new Map,log:function({cacheKey:e,msg:t}){var r;this.__cache.has(e)&&Date.now()<((null==(r=this.__cache.get(e))?void 0:r.expiresAt)||0)||(console.log(t),this.__cache.set(e,{expiresAt:Date.now()+6e5}))},run:async function(e,{cacheKey:t,onSuccessStale:r=6e5,onErrorStale:o=6e5}){var n,a;if(this.__cache.has(t)&&Date.now()<((null==(n=this.__cache.get(t))?void 0:n.expiresAt)||0))return null==(a=this.__cache.get(t))?void 0:a.data;try{let o=await e();return this.__cache.set(t,{expiresAt:Date.now()+r,data:o}),o}catch(e){throw this.__cache.set(t,{expiresAt:Date.now()+o}),e}}}),globalThis.__clerk_internal_keyless_logger}()}]);

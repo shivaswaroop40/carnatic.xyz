@@ -9,7 +9,7 @@ export const runtime = "edge";
  */
 export async function GET() {
 	try {
-		const { env } = await getCloudflareContext({ async: true });
+		const { env } = getCloudflareContext();
 		const hasEnv = !!env;
 		const hasDb = !!env?.DB;
 		if (!hasDb) {

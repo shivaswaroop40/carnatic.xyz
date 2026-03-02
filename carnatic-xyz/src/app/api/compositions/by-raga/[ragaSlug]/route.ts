@@ -12,7 +12,7 @@ export async function GET(
 	{ params }: { params: Promise<{ ragaSlug: string }> },
 ) {
 	const { ragaSlug } = await params;
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	try {
 		const [raga] = await db

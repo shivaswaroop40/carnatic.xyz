@@ -16,7 +16,7 @@ const MAX_LIMIT = 100;
 async function getEnv(): Promise<{ DB: D1Database } | null> {
 	try {
 		await cookies(); // Dynamic API first so Next/OpenNext treat route as dynamic
-		const { env } = await getCloudflareContext({ async: true });
+		const { env } = getCloudflareContext();
 		if (!env?.DB) return null;
 		return env as { DB: D1Database };
 	} catch {
@@ -111,7 +111,7 @@ export async function getRagasFromDb(params?: {
 }
 
 export async function getComposersFromDb(params?: { limit?: number; offset?: number }) {
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	const limit = Math.min(
 		Math.max(params?.limit ?? 500, 1),
@@ -151,7 +151,7 @@ export async function getCompositionsFromDb(params?: {
 	limit?: number;
 	offset?: number;
 }) {
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	const sort = params?.sort || "views";
 	const limit = Math.min(

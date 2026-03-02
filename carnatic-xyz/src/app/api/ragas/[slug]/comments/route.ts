@@ -12,7 +12,7 @@ export async function GET(
 	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	const { slug } = await params;
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	try {
 		const [raga] = await db
@@ -53,7 +53,7 @@ export async function POST(
 	}
 	const { slug } = await params;
 	const raw = await request.json();
-	const body = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
+	const body = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
 	const bodyText =
 		typeof body.body === "string" ? body.body.trim() : "";
 	if (!bodyText || bodyText.length > 5000) {
@@ -66,7 +66,7 @@ export async function POST(
 		typeof body.username === "string" && body.username.trim()
 			? body.username.trim()
 			: "user";
-	const { env } = await getCloudflareContext({ async: true });
+	const { env } = getCloudflareContext();
 	const db = getDb(env.DB);
 	try {
 		const [raga] = await db
