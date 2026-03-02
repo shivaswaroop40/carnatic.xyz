@@ -7,7 +7,22 @@ import { getDb } from "@/lib/db";
 export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
-	const { env } = getCloudflareContext();
+	let env: { DB?: D1Database } | undefined;
+	try {
+		({ env } = getCloudflareContext());
+	} catch (e) {
+		console.error("Compositions API: no Cloudflare context", e);
+		return NextResponse.json(
+			{ error: "Service unavailable" },
+			{ status: 503 },
+		);
+	}
+	if (!env?.DB) {
+		return NextResponse.json(
+			{ error: "Database unavailable" },
+			{ status: 503 },
+		);
+	}
 	const db = getDb(env.DB);
 	const url = request.url ? new URL(request.url) : new URL("http://localhost");
 	const ragaId = url.searchParams.get("ragaId");
@@ -56,6 +71,14 @@ export async function GET(request: NextRequest) {
 				? desc(compositions.views)
 				: desc(compositions.createdAt);
 
+	function serializeRow(row: Record<string, unknown>): Record<string, unknown> {
+		const out: Record<string, unknown> = {};
+		for (const [k, v] of Object.entries(row)) {
+			out[k] = v instanceof Date ? v.toISOString() : v;
+		}
+		return out;
+	}
+
 	try {
 		const result = await db
 			.select()
@@ -70,7 +93,7 @@ export async function GET(request: NextRequest) {
 			.where(whereClause);
 		const total = countResult[0]?.value ?? 0;
 		return NextResponse.json({
-			compositions: result,
+			compositions: result.map((r) => serializeRow(r as Record<string, unknown>)),
 			pagination: {
 				total,
 				limit,

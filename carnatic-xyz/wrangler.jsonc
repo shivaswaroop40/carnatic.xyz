@@ -6,6 +6,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "carnatic-xyz",
 	"main": ".open-next/worker.js",
+	"keep_names": false,
 	"compatibility_date": "2026-03-02",
 	"compatibility_flags": [
 		"nodejs_compat",

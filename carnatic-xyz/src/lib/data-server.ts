@@ -91,13 +91,22 @@ export async function getRagasFromDb(params?: {
 				hasMore: offset + result.length < total,
 			},
 		};
-	} catch {
+	} catch (err) {
+		console.error("[getRagasFromDb]", err);
 		return emptyRagas();
 	}
 }
 
+function emptyComposers() {
+	return {
+		composers: [],
+		pagination: { total: 0, limit: 500, offset: 0, hasMore: false },
+	};
+}
+
 export async function getComposersFromDb(params?: { limit?: number; offset?: number }) {
-	const { env } = getCloudflareContext();
+	const env = await getEnv();
+	if (!env) return emptyComposers();
 	const db = getDb(env.DB);
 	const limit = Math.min(
 		Math.max(params?.limit ?? 500, 1),
@@ -105,24 +114,36 @@ export async function getComposersFromDb(params?: { limit?: number; offset?: num
 	);
 	const offset = Math.max(params?.offset ?? 0, 0);
 
-	const [list, countResult] = await Promise.all([
-		db
-			.select()
-			.from(composers)
-			.orderBy(asc(composers.name))
-			.limit(limit)
-			.offset(offset),
-		db.select({ value: count(composers.id) }).from(composers),
-	]);
-	const total = countResult[0]?.value ?? 0;
+	try {
+		const [list, countResult] = await Promise.all([
+			db
+				.select()
+				.from(composers)
+				.orderBy(asc(composers.name))
+				.limit(limit)
+				.offset(offset),
+			db.select({ value: count(composers.id) }).from(composers),
+		]);
+		const total = countResult[0]?.value ?? 0;
+		return {
+			composers: list.map((c) => ({ id: c.id, name: c.name, slug: c.slug })),
+			pagination: {
+				total,
+				limit,
+				offset,
+				hasMore: offset + list.length < total,
+			},
+		};
+	} catch (err) {
+		console.error("[getComposersFromDb]", err);
+		return emptyComposers();
+	}
+}
+
+function emptyCompositions() {
 	return {
-		composers: list.map((c) => ({ id: c.id, name: c.name, slug: c.slug })),
-		pagination: {
-			total,
-			limit,
-			offset,
-			hasMore: offset + list.length < total,
-		},
+		compositions: [],
+		pagination: { total: 0, limit: DEFAULT_PAGE_SIZE, offset: 0, hasMore: false },
 	};
 }
 
@@ -137,7 +158,8 @@ export async function getCompositionsFromDb(params?: {
 	limit?: number;
 	offset?: number;
 }) {
-	const { env } = getCloudflareContext();
+	const env = await getEnv();
+	if (!env) return emptyCompositions();
 	const db = getDb(env.DB);
 	const sort = params?.sort || "views";
 	const limit = Math.min(
@@ -173,27 +195,32 @@ export async function getCompositionsFromDb(params?: {
 				? desc(compositions.views)
 				: desc(compositions.createdAt);
 
-	const [result, countResult] = await Promise.all([
-		db
-			.select()
-			.from(compositions)
-			.where(whereClause)
-			.orderBy(orderBy)
-			.limit(limit)
-			.offset(offset),
-		db
-			.select({ value: count(compositions.id) })
-			.from(compositions)
-			.where(whereClause),
-	]);
-	const total = countResult[0]?.value ?? 0;
-	return {
-		compositions: result,
-		pagination: {
-			total,
-			limit,
-			offset,
-			hasMore: offset + result.length < total,
-		},
-	};
+	try {
+		const [result, countResult] = await Promise.all([
+			db
+				.select()
+				.from(compositions)
+				.where(whereClause)
+				.orderBy(orderBy)
+				.limit(limit)
+				.offset(offset),
+			db
+				.select({ value: count(compositions.id) })
+				.from(compositions)
+				.where(whereClause),
+		]);
+		const total = countResult[0]?.value ?? 0;
+		return {
+			compositions: result,
+			pagination: {
+				total,
+				limit,
+				offset,
+				hasMore: offset + result.length < total,
+			},
+		};
+	} catch (err) {
+		console.error("[getCompositionsFromDb]", err);
+		return emptyCompositions();
+	}
 }

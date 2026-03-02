@@ -6,12 +6,43 @@ import { getDb } from "@/lib/db";
 
 export const runtime = "edge";
 
+/** Make composition record JSON-serializable for Edge (Date, BigInt, undefined) */
+function serializeRow(comp: Record<string, unknown>): Record<string, unknown> {
+	const out: Record<string, unknown> = {};
+	for (const [k, v] of Object.entries(comp)) {
+		if (v === undefined) continue;
+		if (v instanceof Date) {
+			out[k] = v.toISOString();
+		} else if (typeof v === "bigint") {
+			out[k] = String(v);
+		} else {
+			out[k] = v;
+		}
+	}
+	return out;
+}
+
 export async function GET(
 	_request: NextRequest,
 	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	const { slug } = await params;
-	const { env } = getCloudflareContext();
+	let env: { DB?: D1Database } | undefined;
+	try {
+		({ env } = getCloudflareContext());
+	} catch (e) {
+		console.error("Composition API: no Cloudflare context", e);
+		return NextResponse.json(
+			{ error: "Service unavailable" },
+			{ status: 503 },
+		);
+	}
+	if (!env?.DB) {
+		return NextResponse.json(
+			{ error: "Database unavailable" },
+			{ status: 503 },
+		);
+	}
 	const db = getDb(env.DB);
 	try {
 		const [row] = await db
@@ -31,7 +62,7 @@ export async function GET(
 			);
 		}
 		const comp = row.composition as Record<string, unknown>;
-		const out = { ...comp };
+		const out = serializeRow(comp);
 		if (row.ragaSlug != null) out.ragaSlug = row.ragaSlug;
 		if (row.ragaName != null) out.ragaName = row.ragaName;
 		return NextResponse.json(out);

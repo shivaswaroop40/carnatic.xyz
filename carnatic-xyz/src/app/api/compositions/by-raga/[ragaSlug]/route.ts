@@ -7,13 +7,28 @@ import { getDb } from "@/lib/db";
 
 export const runtime = "edge";
 
+function getEnv() {
+	try {
+		const { env } = getCloudflareContext();
+		return env?.DB ? { env, db: getDb(env.DB) } : null;
+	} catch {
+		return null;
+	}
+}
+
 export async function GET(
 	_request: NextRequest,
 	{ params }: { params: Promise<{ ragaSlug: string }> },
 ) {
 	const { ragaSlug } = await params;
-	const { env } = getCloudflareContext();
-	const db = getDb(env.DB);
+	const ctx = getEnv();
+	if (!ctx) {
+		return NextResponse.json(
+			{ error: "Service unavailable" },
+			{ status: 503 },
+		);
+	}
+	const { db } = ctx;
 	try {
 		const [raga] = await db
 			.select()

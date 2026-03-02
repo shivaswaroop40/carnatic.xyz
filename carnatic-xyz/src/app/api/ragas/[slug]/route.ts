@@ -6,12 +6,35 @@ import { getDb } from "@/lib/db";
 
 export const runtime = "edge";
 
+function serializeRaga(row: Record<string, unknown>): Record<string, unknown> {
+	const out: Record<string, unknown> = {};
+	for (const [k, v] of Object.entries(row)) {
+		out[k] = v instanceof Date ? v.toISOString() : v;
+	}
+	return out;
+}
+
 export async function GET(
 	_request: NextRequest,
 	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	const { slug } = await params;
-	const { env } = getCloudflareContext();
+	let env: { DB?: D1Database } | undefined;
+	try {
+		({ env } = getCloudflareContext());
+	} catch (e) {
+		console.error("Raga API: no Cloudflare context", e);
+		return NextResponse.json(
+			{ error: "Service unavailable" },
+			{ status: 503 },
+		);
+	}
+	if (!env?.DB) {
+		return NextResponse.json(
+			{ error: "Database unavailable" },
+			{ status: 503 },
+		);
+	}
 	const db = getDb(env.DB);
 	try {
 		const [raga] = await db
@@ -22,7 +45,7 @@ export async function GET(
 		if (!raga) {
 			return NextResponse.json({ error: "Raga not found" }, { status: 404 });
 		}
-		return NextResponse.json(raga);
+		return NextResponse.json(serializeRaga(raga as Record<string, unknown>));
 	} catch (error) {
 		console.error("Error fetching raga:", error);
 		return NextResponse.json(

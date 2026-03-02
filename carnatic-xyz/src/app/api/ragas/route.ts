@@ -7,7 +7,22 @@ import { getDb } from "@/lib/db";
 export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
-	const { env } = getCloudflareContext();
+	let env: { DB?: D1Database; CACHE?: KVNamespace } | undefined;
+	try {
+		({ env } = getCloudflareContext());
+	} catch (e) {
+		console.error("Ragas API: no Cloudflare context", e);
+		return NextResponse.json(
+			{ error: "Service unavailable" },
+			{ status: 503 },
+		);
+	}
+	if (!env?.DB) {
+		return NextResponse.json(
+			{ error: "Database unavailable" },
+			{ status: 503 },
+		);
+	}
 	const db = getDb(env.DB);
 	const url = request.url ? new URL(request.url) : new URL("http://localhost");
 	const type = url.searchParams.get("type");
@@ -54,6 +69,14 @@ export async function GET(request: NextRequest) {
 				? desc(ragas.totalRatings)
 				: asc(ragas.name);
 
+		function serializeRow(row: Record<string, unknown>): Record<string, unknown> {
+			const out: Record<string, unknown> = {};
+			for (const [k, v] of Object.entries(row)) {
+				out[k] = v instanceof Date ? v.toISOString() : v;
+			}
+			return out;
+		}
+
 		const result = await db
 			.select()
 			.from(ragas)
@@ -69,7 +92,7 @@ export async function GET(request: NextRequest) {
 		const total = countResult[0]?.value ?? 0;
 
 		const response = {
-			ragas: result,
+			ragas: result.map((r) => serializeRow(r as Record<string, unknown>)),
 			pagination: {
 				total,
 				limit,

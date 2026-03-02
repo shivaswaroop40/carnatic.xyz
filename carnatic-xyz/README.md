@@ -94,11 +94,17 @@ carnatic-xyz/
 
 ## Run locally
 
-- **Next.js dev server (no Cloudflare bindings):**
-  ```bash
-  npm run dev
-  ```
-  Open [http://localhost:3000](http://localhost:3000). API routes that need D1/KV will fail or mock unless bindings are available.
+- **Next.js dev server (with OpenNext Cloudflare D1 bindings):**
+  1. **One-time (or after pulling):** create local D1 tables and seed data from the **carnatic-xyz** directory:
+     ```bash
+     cd carnatic-xyz
+     npm run db:local-setup
+     ```
+  2. Start the dev server:
+     ```bash
+     npm run dev
+     ```
+     Open [http://localhost:3000](http://localhost:3000). If you see **"no such table"** or empty compositions/ragas, **stop the dev server**, run `npm run db:local-setup` again, then start `npm run dev` from **carnatic-xyz** so it uses the same local D1 (`.wrangler/state/v3/d1`).
 
 - **If you don’t see changes locally:**  
   Next.js (and Turbopack) can serve cached output. Clear the cache and restart:
@@ -111,7 +117,7 @@ carnatic-xyz/
   ```bash
   npm run preview
   ```
-  Builds with OpenNext Cloudflare and runs the worker locally with D1/KV bindings. Re-run after code changes.
+  Builds with OpenNext Cloudflare and runs the worker locally with D1/KV bindings. Re-run after code changes. Uses the same local D1 as `db:local-setup`.
 
 - **Lint**
   ```bash
