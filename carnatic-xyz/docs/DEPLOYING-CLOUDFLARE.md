@@ -185,11 +185,15 @@ The repo includes a workflow that builds and deploys on push to `main`.
    - [Create an API token](https://dash.cloudflare.com/profile/api-tokens) with **“Edit Cloudflare Workers”** or **“Cloudflare Pages Edit”** permission (and optionally “D1 Edit” if you run migrations from CI).  
    - In your GitHub repo: **Settings** → **Secrets and variables** → **Actions** → **New repository secret** → name: `CLOUDFLARE_API_TOKEN`, value: the token.
 
-2. **Wrangler config**  
+2. **Cloudflare account ID**  
+   - In GitHub: **Settings** → **Secrets and variables** → **Actions** → **Variables** → **New repository variable** → name: `CLOUDFLARE_ACCOUNT_ID`, value: your Cloudflare account ID (find it in the dashboard URL when viewing Workers, or under **Workers & Pages** → **Overview** in the right sidebar).  
+   - This avoids Wrangler calling the `/memberships` API, which can fail with some tokens (auth error 10001).
+
+3. **Wrangler config**  
    - Ensure `wrangler.jsonc` has the correct **production** `database_id` and KV `id` (and optional `vars`).  
    - Do not put the API token in wrangler; the workflow uses the GitHub secret.
 
-3. **Build env (Clerk, etc.)**  
+4. **Build env (Clerk, etc.)**  
    - If the build needs `CLERK_SECRET_KEY` or `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, add them as GitHub Actions secrets and pass them into the deploy job (see `.github/workflows/deploy.yml`).
 
 ### What the workflow does

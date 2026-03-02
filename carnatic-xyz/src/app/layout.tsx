@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono, Lora } from "next/font/google";
 import { AuthAvailableProvider } from "@/lib/auth-available";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
@@ -58,19 +59,21 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} ${lora.variable} font-sans antialiased`}
 			>
-				<SiteNav />
-				<div className="flex min-h-screen flex-col">
-				{clerkAvailable ? (
-					<ClerkProvider
-						publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
-					>
-						{content}
-					</ClerkProvider>
-				) : (
-					content
-				)}
-				<SiteFooter />
-				</div>
+				<ThemeProvider>
+					<SiteNav />
+					<div className="flex min-h-screen flex-col">
+					{clerkAvailable ? (
+						<ClerkProvider
+							publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
+						>
+							{content}
+						</ClerkProvider>
+					) : (
+						content
+					)}
+					<SiteFooter />
+					</div>
+				</ThemeProvider>
 			</body>
 		</html>
 	);

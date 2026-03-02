@@ -7,6 +7,7 @@ import { Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchPopup } from "@/components/SearchPopup";
 import { TanpuraDropdown } from "@/components/TanpuraDropdown";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NAV_LINKS = [
 	{ href: "/", label: "Home" },
@@ -49,6 +50,7 @@ export function SiteNav() {
 							</Link>
 						))}
 						<TanpuraDropdown />
+						<ThemeToggle />
 						<button
 							type="button"
 							onClick={() => setSearchOpen(true)}
@@ -126,6 +128,10 @@ export function SiteNav() {
 							>
 								<Search className="size-4" /> Search
 							</button>
+							<div className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground">
+								<span>Appearance</span>
+								<ThemeToggle />
+							</div>
 						</nav>
 					</div>
 				</div>
