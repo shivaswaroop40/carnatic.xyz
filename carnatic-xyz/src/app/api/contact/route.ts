@@ -7,7 +7,8 @@ const RESEND_API = "https://api.resend.com/emails";
 
 export async function POST(request: NextRequest) {
 	try {
-		const body = await request.json();
+		const raw = await request.json();
+		const body = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
 		const name = typeof body.name === "string" ? body.name.trim() : "";
 		const email = typeof body.email === "string" ? body.email.trim() : "";
 		const message = typeof body.message === "string" ? body.message.trim() : "";
