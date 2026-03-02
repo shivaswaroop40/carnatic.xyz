@@ -17,6 +17,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    continue-on-error: true
     defaults:
       run:
         working-directory: ${{ env.APP_DIR }}

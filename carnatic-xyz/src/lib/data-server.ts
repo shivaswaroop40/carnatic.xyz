@@ -31,20 +31,6 @@ function emptyRagas() {
 	};
 }
 
-function emptyComposers() {
-	return {
-		composers: [] as Array<{ id: number; name: string; slug: string }>,
-		pagination: { total: 0, limit: 500, offset: 0, hasMore: false },
-	};
-}
-
-function emptyCompositions() {
-	return {
-		compositions: [],
-		pagination: { total: 0, limit: DEFAULT_PAGE_SIZE, offset: 0, hasMore: false },
-	};
-}
-
 export async function getRagasFromDb(params?: {
 	type?: string;
 	sort?: string;

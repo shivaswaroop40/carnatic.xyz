@@ -43,7 +43,6 @@ export function CompositionsClient({
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
-	const offset = Math.max(0, parseInt(searchParams.get("offset") || "0", 10));
 	const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || String(DEFAULT_PAGE_SIZE), 10)));
 	const sort = searchParams.get("sort") || DEFAULT_SORT;
 	const q = searchParams.get("q") || "";

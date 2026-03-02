@@ -16,7 +16,7 @@ export default async function RagasPage({
 	const sort = typeof params?.sort === "string" ? params.sort : "name";
 	const q = typeof params?.q === "string" ? params.q : "";
 	const limit = Math.min(
-		Math.max(parseInt(typeof params?.limit === "string" ? params.limit : "25", 10) || 25, 1),
+		Math.max(parseInt(typeof params?.limit === "string" ? params.limit : String(DEFAULT_PAGE_SIZE), 10) || DEFAULT_PAGE_SIZE, 1),
 		100,
 	);
 	const offset = Math.max(
