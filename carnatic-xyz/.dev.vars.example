@@ -1,0 +1,7 @@
+# Dependencies and local dev (do not commit real keys)
+# Copy this file to .dev.vars and fill in your values.
+
+# Clerk (optional – app works with auth disabled if keys are missing or placeholder)
+# Get keys from https://dashboard.clerk.com
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_placeholder_or_your_key
+CLERK_SECRET_KEY=sk_test_placeholder_or_your_secret

@@ -1,0 +1,33 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { eq } from "drizzle-orm";
+import { ragas } from "../../../../../drizzle/schema";
+import { getDb } from "@/lib/db";
+
+export const runtime = "edge";
+
+export async function GET(
+	_request: NextRequest,
+	{ params }: { params: Promise<{ slug: string }> },
+) {
+	const { slug } = await params;
+	const { env } = await getCloudflareContext({ async: true });
+	const db = getDb(env.DB);
+	try {
+		const [raga] = await db
+			.select()
+			.from(ragas)
+			.where(eq(ragas.slug, slug))
+			.limit(1);
+		if (!raga) {
+			return NextResponse.json({ error: "Raga not found" }, { status: 404 });
+		}
+		return NextResponse.json(raga);
+	} catch (error) {
+		console.error("Error fetching raga:", error);
+		return NextResponse.json(
+			{ error: "Failed to fetch raga" },
+			{ status: 500 },
+		);
+	}
+}

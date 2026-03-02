@@ -1,0 +1,55 @@
+/**
+ * Wrangler config for Cloudflare Pages/Workers.
+ * @see https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "carnatic-xyz",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-03-02",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".open-next/assets"
+	},
+	"images": {
+		// Enable image optimization
+		// see https://opennext.js.org/cloudflare/howtos/image
+		"binding": "IMAGES"
+	},
+	"services": [
+		{
+			// Self-reference service binding, the service name must match the worker name
+			// see https://opennext.js.org/cloudflare/caching
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "carnatic-xyz"
+		}
+	],
+	"observability": {
+		"enabled": true
+	},
+	"routes": [
+		{
+			"pattern": "carnatic.xyz",
+			"custom_domain": true
+		},
+		{
+			"pattern": "www.carnatic.xyz",
+			"custom_domain": true
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "carnatic-music-db",
+			"database_id": "8fac0622-ba33-4e8a-a1c9-4387247691da",
+			"migrations_dir": "drizzle/migrations"
+		}
+	],
+	"vars": {
+		"NEXT_PUBLIC_APP_URL": "https://carnatic.xyz"
+	}
+}
